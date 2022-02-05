@@ -4,13 +4,13 @@ import { S3, ListObjectsCommand } from "@aws-sdk/client-s3";
 
 const credentials = fromCognitoIdentityPool({
   identityPoolId: process.env.NEXT_PUBLIC_IDENTITY_POOL_ID || "",
-  clientConfig: { region: "us-east-2" },
+  clientConfig: { region: process.env.NEXT_PUBLIC_AWS_REGION },
 });
 
-const albumBucket = "kkrato-image-share";
+const albumBucket = process.env.NEXT_PUBLIC_ALBUM_BUCKET_NAME;
 
 const client = new S3({
-  region: "us-east-2",
+  region: process.env.NEXT_PUBLIC_AWS_REGION,
   credentials,
 });
 
