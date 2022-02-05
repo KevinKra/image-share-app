@@ -8,7 +8,7 @@ export const credentials = fromCognitoIdentityPool({
 });
 
 // * S3 Instantiation
-export const client = new S3({
+export const s3Client = new S3({
   region: process.env.NEXT_PUBLIC_AWS_REGION,
   credentials,
 });
@@ -21,13 +21,13 @@ export const getBucketObjects = async () => {
   });
 
   try {
-    const response = await client.send(command);
+    const response = await s3Client.send(command);
     console.log("res", response);
   } catch (error) {
     console.log("error", error);
   }
 };
 
-export const putObjectInBucket = () => {
-  //   const command = new PutObjectCommand();
-};
+// export const putObjectInBucket = () => {
+//     const command = new PutObjectCommand();
+// };
