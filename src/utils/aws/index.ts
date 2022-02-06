@@ -15,14 +15,17 @@ export const s3Client = new S3({
 
 export const albumBucket = process.env.NEXT_PUBLIC_ALBUM_BUCKET_NAME;
 
-export const getBucketObjects = async () => {
+export const getAlbumObjects = async () => {
   const command = new ListObjectsCommand({
+    // Prefix: "album1/",
     Bucket: albumBucket,
   });
 
   try {
     const response = await s3Client.send(command);
     console.log("res", response);
+
+    return response.Contents;
   } catch (error) {
     console.log("error", error);
   }
