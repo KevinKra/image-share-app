@@ -1,34 +1,40 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Phases
 
-## Getting Started
+These phases and solutions are tailored around AWS integrations.
 
-First, run the development server:
+## Phase 1
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+### S3, IAM, Cognito
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- [ ] identity pool created, role-based IAM policy configurations set.
+- [ ] unauth users (guests) can list and _temporarily_ put objects in bucket.
+- [ ] user pool created, role-based IAM policy configurations set.
+- [ ] guests can login and/or register.
+- [ ] auth user can **put** objects in **their** _user-unique_ folder within the bucket.
+- [ ] auth user can **delete** objects in **their** _user-unique_ folder within the bucket.
+- [ ] auth user can **get** objects from _user-unique_ folder within the bucket.
+- [ ] unauth users can no longer put objects in buckets, but can still view objects.
+- [ ] all users can visit other user pages and see _that user's_ image collection.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## Phase 2
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+### Pipelines
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+- [ ] setup automated pipeline using CodePipeline and CodeDeploy
+- [ ] explore suitable approach to deploy and maintain reachable endpoint.
+- [ ] explore SAM / Cloudformation IAC solutions.
 
-## Learn More
+## Phase 3
 
-To learn more about Next.js, take a look at the following resources:
+### Lambda, DynamoDB
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+#### Lambda
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- [ ] when image is uploaded, trigger lambda to resize image to large and medium formats.
 
-## Deploy on Vercel
+#### DynamoDB
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- [ ] when image is uploaded, capture relationship to user in DynamoDB.
+- [ ] explore liking feature.
+- [ ] explore subscribing feature.
+- [ ] explore recommended feature.
