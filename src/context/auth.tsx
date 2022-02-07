@@ -11,13 +11,35 @@ export const poolData = {
 };
 export const UserPool = new CognitoUserPool(poolData);
 
-// const defaultState = {
-//   authenticate: (name: string, password: string) => {},
-// };
+export const confirmUser = (email: string, registrationCode: string) => {
+  const user = new CognitoUser({
+    Username: email,
+    Pool: UserPool,
+  });
 
-interface IAccountContext {
-  authenticate: (email: string, password: string) => Promise<void>;
-}
+  user.confirmRegistration(registrationCode, true, (err, result) => {
+    if (err) {
+      alert(err.message || JSON.stringify(err));
+      return;
+    }
+    console.log("call result: " + result);
+  });
+};
+
+const getSession = async () => {
+  try {
+    const currentUser = await UserPool.getCurrentUser();
+    return currentUser?.getSession((err: any, session: any) => {
+      if (err) {
+        console.log("error", err);
+        return err;
+      }
+      return session;
+    });
+  } catch (err) {
+    console.log("error", err);
+  }
+};
 
 const authenticate = async (email: string, password: string) => {
   await new Promise((resolve, reject) => {
@@ -48,11 +70,19 @@ const authenticate = async (email: string, password: string) => {
   });
 };
 
-const AccountContext = createContext<IAccountContext>({ authenticate });
+interface IAccountContext {
+  authenticate: (email: string, password: string) => Promise<void>;
+  getSession: () => Promise<void>;
+}
+
+const AccountContext = createContext<IAccountContext>({
+  authenticate,
+  getSession,
+});
 
 const Account = (props: any) => {
   return (
-    <AccountContext.Provider value={{ authenticate }}>
+    <AccountContext.Provider value={{ authenticate, getSession }}>
       {props.children}
     </AccountContext.Provider>
   );

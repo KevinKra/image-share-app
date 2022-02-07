@@ -1,9 +1,15 @@
 import type { NextPage } from "next";
 import { useState, useContext } from "react";
-import { AccountContext, Account, UserPool } from "../context/auth";
+import {
+  AccountContext,
+  Account,
+  UserPool,
+  confirmUser,
+} from "../context/auth";
 import ContentUploader from "../components/_molecules/ContentUploader/ContentUploader";
 import ImageCollection from "../components/_molecules/ImageCollection/ImageCollection";
 import { CognitoUserPool } from "amazon-cognito-identity-js";
+import UserStatus from "../components/_molecules/UserStatus/UserStatus";
 
 // * cognito identity pool is configured
 // * guest (unauth) users are able to upload images
@@ -17,6 +23,7 @@ const Home: NextPage = () => {
   const [inputValues, setInputValues] = useState({
     email: "",
     password: "",
+    code: "",
   });
 
   const { authenticate } = useContext(AccountContext);
@@ -50,6 +57,7 @@ const Home: NextPage = () => {
 
   return (
     <div>
+      <UserStatus />
       <Account>
         <form>
           <input
@@ -68,6 +76,22 @@ const Home: NextPage = () => {
           <button onClick={handleRegister}>Register</button>
         </form>
       </Account>
+      {/* <form> */}
+      <input
+        placeholder="email"
+        type="email"
+        name="email"
+        onChange={(e) => handleInput(e)}
+      ></input>
+      <input
+        placeholder="code"
+        name="code"
+        onChange={(e) => handleInput(e)}
+      ></input>
+      <button onClick={() => confirmUser(inputValues.email, inputValues.code)}>
+        Confirm Account
+      </button>
+      {/* </form> */}
       <ContentUploader />
       <ImageCollection />
     </div>
