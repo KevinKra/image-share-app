@@ -5,6 +5,7 @@ import {
   Account,
   UserPool,
   confirmUser,
+  logout,
 } from "../context/auth";
 import ContentUploader from "../components/_molecules/ContentUploader/ContentUploader";
 import ImageCollection from "../components/_molecules/ImageCollection/ImageCollection";
@@ -26,7 +27,7 @@ const Home: NextPage = () => {
     code: "",
   });
 
-  const { authenticate } = useContext(AccountContext);
+  const { authenticate, currentUser } = useContext(AccountContext);
 
   const handleInput = (e: any) => {
     const { name, value } = e.target;
@@ -40,6 +41,7 @@ const Home: NextPage = () => {
     try {
       const response = authenticate(email, password);
       console.log("auth response", response);
+      currentUser = response;
     } catch (err) {
       console.log("auth error", err);
     }
@@ -72,11 +74,16 @@ const Home: NextPage = () => {
             name="password"
             onChange={(e) => handleInput(e)}
           ></input>
-          <button onClick={handleLogin}>Login</button>
-          <button onClick={handleRegister}>Register</button>
+          {!!currentUser ? (
+            <button onClick={logout}>Logout</button>
+          ) : (
+            <>
+              <button onClick={handleLogin}>Login</button>
+              <button onClick={handleRegister}>Register</button>
+            </>
+          )}
         </form>
       </Account>
-      {/* <form> */}
       <input
         placeholder="email"
         type="email"
@@ -91,7 +98,6 @@ const Home: NextPage = () => {
       <button onClick={() => confirmUser(inputValues.email, inputValues.code)}>
         Confirm Account
       </button>
-      {/* </form> */}
       <ContentUploader />
       <ImageCollection />
     </div>

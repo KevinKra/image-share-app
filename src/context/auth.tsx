@@ -41,6 +41,14 @@ const getSession = async () => {
   }
 };
 
+export const logout = () => {
+  const user = UserPool.getCurrentUser();
+  console.log("logout", user);
+  if (user) {
+    user.signOut();
+  }
+};
+
 const authenticate = async (email: string, password: string) => {
   await new Promise((resolve, reject) => {
     const user = new CognitoUser({
@@ -70,19 +78,23 @@ const authenticate = async (email: string, password: string) => {
   });
 };
 
+let currentUser = UserPool.getCurrentUser();
+
 interface IAccountContext {
   authenticate: (email: string, password: string) => Promise<void>;
   getSession: () => Promise<void>;
+  currentUser: CognitoUser | null;
 }
 
 const AccountContext = createContext<IAccountContext>({
   authenticate,
   getSession,
+  currentUser,
 });
 
 const Account = (props: any) => {
   return (
-    <AccountContext.Provider value={{ authenticate, getSession }}>
+    <AccountContext.Provider value={{ authenticate, getSession, currentUser }}>
       {props.children}
     </AccountContext.Provider>
   );

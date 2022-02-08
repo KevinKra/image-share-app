@@ -1,21 +1,31 @@
 import { useState, useContext, useEffect } from "react";
-import { AccountContext } from "../../../context/auth";
+import { AccountContext, logout, UserPool } from "../../../context/auth";
 
 const UserStatus = () => {
-  const [status, setStatus] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
 
-  const { getSession } = useContext(AccountContext);
+  const { authenticate, getSession, currentUser } = useContext(AccountContext);
 
   useEffect(() => {
-    getSession().then((session) => {
-      console.log({ session });
-      // todo - not sound logic, errors not gracefully handled
-      // todo - on fresh login, doenst detect and automatically change (yet)
-      session !== undefined && setStatus(true);
-    });
-  }, [getSession]);
+    // const checkStatus = async () => {
+    //   const status = await getSession().then((session) => {
+    //     session !== undefined && setLoggedIn(true);
+    //   });
+    //   console.log({ status });
+    // };
+    // checkStatus();
+    !!UserPool.getCurrentUser() ? setLoggedIn(true) : setLoggedIn(false);
+  }, [currentUser]);
 
-  return <div>{status ? <p>Logged In</p> : <p>Please Log in</p>}</div>;
+  return (
+    <div>
+      {loggedIn ? (
+        <button onClick={logout}>Logout</button>
+      ) : (
+        <p>Please sign in</p>
+      )}
+    </div>
+  );
 };
 
 export default UserStatus;
