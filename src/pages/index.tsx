@@ -1,8 +1,8 @@
 import type { NextPage } from "next";
 import { useState, useContext } from "react";
 import {
-  AccountContext,
-  Account,
+  useAuth,
+  AuthProvider,
   UserPool,
   confirmUser,
   logout,
@@ -27,7 +27,7 @@ const Home: NextPage = () => {
     code: "",
   });
 
-  const { authenticate, currentUser } = useContext(AccountContext);
+  const { authenticate, getSession } = useAuth();
 
   const handleInput = (e: any) => {
     const { name, value } = e.target;
@@ -41,7 +41,6 @@ const Home: NextPage = () => {
     try {
       const response = authenticate(email, password);
       console.log("auth response", response);
-      currentUser = response;
     } catch (err) {
       console.log("auth error", err);
     }
@@ -59,31 +58,30 @@ const Home: NextPage = () => {
 
   return (
     <div>
-      <UserStatus />
-      <Account>
-        <form>
-          <input
-            placeholder="email"
-            type="email"
-            name="email"
-            onChange={(e) => handleInput(e)}
-          ></input>
-          <input
-            placeholder="password"
-            type="password"
-            name="password"
-            onChange={(e) => handleInput(e)}
-          ></input>
-          {!!currentUser ? (
-            <button onClick={logout}>Logout</button>
-          ) : (
-            <>
-              <button onClick={handleLogin}>Login</button>
-              <button onClick={handleRegister}>Register</button>
-            </>
-          )}
-        </form>
-      </Account>
+      <form>
+        <input
+          placeholder="email"
+          type="email"
+          name="email"
+          onChange={(e) => handleInput(e)}
+        ></input>
+        <input
+          placeholder="password"
+          type="password"
+          name="password"
+          onChange={(e) => handleInput(e)}
+        ></input>
+      </form>
+      <div>
+        {!getSession ? (
+          <button onClick={logout}>Logout</button>
+        ) : (
+          <>
+            <button onClick={handleLogin}>Login</button>
+            <button onClick={handleRegister}>Register</button>
+          </>
+        )}
+      </div>
       <input
         placeholder="email"
         type="email"

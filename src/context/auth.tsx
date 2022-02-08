@@ -1,8 +1,9 @@
-import { createContext } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import {
   CognitoUser,
   AuthenticationDetails,
   CognitoUserPool,
+  CognitoUserSession,
 } from "amazon-cognito-identity-js";
 
 export const poolData = {
@@ -10,6 +11,12 @@ export const poolData = {
   ClientId: "19kum86vl53kl04s5cvpttmlmc",
 };
 export const UserPool = new CognitoUserPool(poolData);
+
+interface IAuthContext {
+  authenticate: (email: string, password: string) => Promise<void>;
+  getSession: () => Promise<void>;
+  // currentUser: CognitoUser | null;
+}
 
 export const confirmUser = (email: string, registrationCode: string) => {
   const user = new CognitoUser({
@@ -38,14 +45,6 @@ const getSession = async () => {
     });
   } catch (err) {
     console.log("error", err);
-  }
-};
-
-export const logout = () => {
-  const user = UserPool.getCurrentUser();
-  console.log("logout", user);
-  if (user) {
-    user.signOut();
   }
 };
 
@@ -78,26 +77,33 @@ const authenticate = async (email: string, password: string) => {
   });
 };
 
-let currentUser = UserPool.getCurrentUser();
+export const logout = () => {
+  const user = UserPool.getCurrentUser();
+  console.log({ user });
+  if (user) {
+    console.log({ user });
+    user.signOut();
+  }
+};
 
-interface IAccountContext {
-  authenticate: (email: string, password: string) => Promise<void>;
-  getSession: () => Promise<void>;
-  currentUser: CognitoUser | null;
-}
+// * context related code
+const AuthContext = createContext<IAuthContext | undefined>(undefined);
 
-const AccountContext = createContext<IAccountContext>({
-  authenticate,
-  getSession,
-  currentUser,
-});
+const useAuth = () => {
+  const context = useContext(AuthContext);
 
-const Account = (props: any) => {
+  if (context === undefined) {
+    throw new Error("useAuth must be used within a AuthProvider");
+  }
+  return context;
+};
+
+const AuthProvider = ({ children }: any) => {
   return (
-    <AccountContext.Provider value={{ authenticate, getSession, currentUser }}>
-      {props.children}
-    </AccountContext.Provider>
+    <AuthContext.Provider value={{ authenticate, getSession }}>
+      {children}
+    </AuthContext.Provider>
   );
 };
 
-export { Account, AccountContext };
+export { AuthProvider, useAuth };
