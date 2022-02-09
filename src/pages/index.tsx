@@ -20,6 +20,15 @@ import UserStatus from "../components/_molecules/UserStatus/UserStatus";
 // todo - set up logic to set images/objects to folder, make readable
 // todo - signed in users / auth iam configure
 
+// 1 - remove s3 put permission from guest users
+// 2 - test if guest user can no longer upload
+// 3 - test if signed in user can upload (config iam permissions if needed)
+// 4 - test that after signed in user logs off, they cannot still upload
+// 5 - setup buckets to have user uuid folders
+// 6 - GET/READ/DELETE objects to new uuid-based folders
+// 7 - Experiment with cognito-apiGateway auth routes
+// 8 - Configure SSR rendering (no more login flicker)
+
 const Home: NextPage = () => {
   const [inputValues, setInputValues] = useState({
     email: "",
@@ -27,7 +36,7 @@ const Home: NextPage = () => {
     code: "",
   });
 
-  const { authenticate, getSession } = useAuth();
+  const { authenticate, logoutUser, getSession, currentUser } = useAuth();
 
   const handleInput = (e: any) => {
     const { name, value } = e.target;
@@ -73,8 +82,8 @@ const Home: NextPage = () => {
         ></input>
       </form>
       <div>
-        {!getSession ? (
-          <button onClick={logout}>Logout</button>
+        {currentUser ? (
+          <button onClick={logoutUser}>Logout</button>
         ) : (
           <>
             <button onClick={handleLogin}>Login</button>
