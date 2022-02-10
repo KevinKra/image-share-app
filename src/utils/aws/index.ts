@@ -34,3 +34,11 @@ export const getAlbumObjects = async () => {
 // export const putObjectInBucket = () => {
 //     const command = new PutObjectCommand();
 // };
+
+// Called when an identity provider has a token for a logged in user
+export function userLoggedIn(providerName: string, token: string) {
+  // creds.params.Logins = creds.params.Logins || {};
+  // creds.params.Logins[providerName] = token;
+  // Expire credentials to refresh them on the next request
+  // creds.expired = true;
+}

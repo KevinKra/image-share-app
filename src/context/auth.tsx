@@ -5,6 +5,7 @@ import {
   CognitoUserPool,
   CognitoUserSession,
 } from "amazon-cognito-identity-js";
+import { credentials, userLoggedIn } from "../utils/aws";
 
 export const poolData = {
   UserPoolId: "us-east-2_H7eduuY2p",
@@ -97,6 +98,7 @@ const AuthProvider = ({ children }: any) => {
           console.log("onSuccess", data);
           resolve(data);
           setCurrentUser(data);
+          // userLoggedIn();
         },
         onFailure: (err) => {
           console.log("onFailure", err);

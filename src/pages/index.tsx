@@ -1,12 +1,6 @@
 import type { NextPage } from "next";
-import { useState, useContext } from "react";
-import {
-  useAuth,
-  AuthProvider,
-  UserPool,
-  confirmUser,
-  logout,
-} from "../context/auth";
+import { useState, useContext, useEffect } from "react";
+import { useAuth, AuthProvider, UserPool, confirmUser } from "../context/auth";
 import ContentUploader from "../components/_molecules/ContentUploader/ContentUploader";
 import ImageCollection from "../components/_molecules/ImageCollection/ImageCollection";
 import { CognitoUserPool } from "amazon-cognito-identity-js";
@@ -21,6 +15,7 @@ import UserStatus from "../components/_molecules/UserStatus/UserStatus";
 // todo - signed in users / auth iam configure
 
 // 1 - remove s3 put permission from guest users
+// 1.1 - reassign creds to logged in user.
 // 2 - test if guest user can no longer upload
 // 3 - test if signed in user can upload (config iam permissions if needed)
 // 4 - test that after signed in user logs off, they cannot still upload
@@ -37,6 +32,17 @@ const Home: NextPage = () => {
   });
 
   const { authenticate, logoutUser, getSession, currentUser } = useAuth();
+
+  useEffect(() => {
+    const getSess = async () => {
+      const session = await getSession();
+      const currentUser = await UserPool.getCurrentUser();
+
+      console.log({ currentUser });
+      console.log({ session });
+    };
+    getSess();
+  }, [getSession]);
 
   const handleInput = (e: any) => {
     const { name, value } = e.target;
