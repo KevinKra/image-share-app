@@ -5,13 +5,10 @@ import {
   CognitoUserPool,
   CognitoUserSession,
 } from "amazon-cognito-identity-js";
-import { credentials, userLoggedIn } from "../utils/aws";
-
-export const poolData = {
-  UserPoolId: "us-east-2_H7eduuY2p",
-  ClientId: "19kum86vl53kl04s5cvpttmlmc",
-};
-export const UserPool = new CognitoUserPool(poolData);
+// import { credentials, userLoggedIn } from "../utils/aws";
+import { fromCognitoIdentityPool } from "@aws-sdk/credential-providers";
+import * as AWS from "aws-sdk/global";
+import { S3, S3Client } from "@aws-sdk/client-s3";
 
 interface IAuthContext {
   authenticate: (email: string, password: string) => Promise<void>;
@@ -19,6 +16,19 @@ interface IAuthContext {
   getSession: () => Promise<void>;
   currentUser: CognitoUserSession | null;
 }
+
+export let s3Client: S3Client;
+
+const identityPoolId = process.env.NEXT_PUBLIC_IDENTITY_POOL_ID as string;
+const userPoolId = process.env.NEXT_PUBLIC_USER_POOL_ID as string;
+const userPoolClientId = process.env.NEXT_PUBLIC_CLIENT_ID as string;
+const poolRegion = process.env.NEXT_PUBLIC_AWS_REGION as string;
+
+export const poolData = {
+  UserPoolId: userPoolId,
+  ClientId: userPoolClientId,
+};
+export const UserPool = new CognitoUserPool(poolData);
 
 export const confirmUser = (email: string, registrationCode: string) => {
   const user = new CognitoUser({
@@ -96,9 +106,38 @@ const AuthProvider = ({ children }: any) => {
       user.authenticateUser(authDetails, {
         onSuccess: (data) => {
           console.log("onSuccess", data);
-          resolve(data);
+          AWS.config.region = poolRegion;
+          const loginDetails = `cognito-idp.${poolRegion}.amazonaws.com/${userPoolId}`;
+
+          var accessToken = data.getAccessToken().getJwtToken();
+          var idToken = data.getIdToken().getJwtToken();
           setCurrentUser(data);
-          // userLoggedIn();
+
+          console.log({ idToken });
+
+          // AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+          //   IdentityPoolId: process.env.NEXT_PUBLIC_IDENTITY_POOL_ID as string,
+          //   Logins: { [loginDetails]: accessToken },
+          // });
+
+          const credentials = fromCognitoIdentityPool({
+            // identityPoolId: process.env.NEXT_PUBLIC_IDENTITY_POOL_ID as string,
+            identityPoolId: process.env.NEXT_PUBLIC_IDENTITY_POOL_ID as string,
+            clientConfig: { region: process.env.NEXT_PUBLIC_AWS_REGION },
+            logins: {
+              // [userPoolId]: accessToken,
+              [loginDetails]: idToken,
+            },
+          });
+
+          console.log({ credentials });
+
+          s3Client = new S3Client({
+            region: process.env.NEXT_PUBLIC_AWS_REGION,
+            credentials,
+          });
+
+          console.log("AWS.config", AWS.config);
         },
         onFailure: (err) => {
           console.log("onFailure", err);

@@ -14,6 +14,8 @@ import UserStatus from "../components/_molecules/UserStatus/UserStatus";
 // todo - set up logic to set images/objects to folder, make readable
 // todo - signed in users / auth iam configure
 
+// ! I'm not entirely sure that the identity configurations through amazon-cognito-identity-js are in parity with the configuration setup through aws-sdk/credential-providers. They both seem to work in isolation, but perhaps dont handshake.
+
 // 1 - remove s3 put permission from guest users
 // 1.1 - reassign creds to logged in user.
 // 2 - test if guest user can no longer upload
