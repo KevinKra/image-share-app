@@ -8,6 +8,7 @@ import UserStatus from "../components/_molecules/UserStatus/UserStatus";
 import NavBar from "../components/_molecules/NavBar/NavBar";
 import Profile from "../components/_molecules/Profile/Profile";
 import styled from "@emotion/styled";
+import PicturesCollection from "../components/_molecules/PicturesCollection/PicturesCollection";
 
 // * cognito identity pool is configured
 // * guest (unauth) users are able to upload images
@@ -31,6 +32,7 @@ const Home: NextPage = () => {
   return (
     <PageWrapper>
       <Profile />
+      <PicturesCollection />
     </PageWrapper>
   );
 };
@@ -39,7 +41,7 @@ export default Home;
 
 const PageWrapper = styled("div")`
   border: 1px solid red;
-  height: 100vh;
+  min-height: 100vh;
   width: 80vw;
   max-width: 925px;
   margin: 0 auto;

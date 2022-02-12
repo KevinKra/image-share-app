@@ -60,12 +60,15 @@ const CollectionBookmark = styled("div")`
   padding: 0.5rem;
   margin: 0 0.5rem;
 `;
+
 const BookmarkImage = styled("div")`
   border: 1px solid gray;
   height: 85px;
   width: 85px;
   border-radius: 50%;
 `;
+
 const BookmarkTitle = styled(Typography)`
   border: 1px solid green;
+  margin-top: 0.5rem;
 `;
