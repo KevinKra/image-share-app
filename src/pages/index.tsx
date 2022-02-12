@@ -5,6 +5,7 @@ import ContentUploader from "../components/_molecules/ContentUploader/ContentUpl
 import ImageCollection from "../components/_molecules/ImageCollection/ImageCollection";
 import { CognitoUserPool } from "amazon-cognito-identity-js";
 import UserStatus from "../components/_molecules/UserStatus/UserStatus";
+import NavBar from "../components/_molecules/NavBar/NavBar";
 
 // * cognito identity pool is configured
 // * guest (unauth) users are able to upload images
@@ -13,8 +14,6 @@ import UserStatus from "../components/_molecules/UserStatus/UserStatus";
 // todo - bucket is currently fully public, look into signedURLs ? (403 forbidden error)
 // todo - set up logic to set images/objects to folder, make readable
 // todo - signed in users / auth iam configure
-
-// ! I'm not entirely sure that the identity configurations through amazon-cognito-identity-js are in parity with the configuration setup through aws-sdk/credential-providers. They both seem to work in isolation, but perhaps dont handshake.
 
 // 1 - remove s3 put permission from guest users
 // 1.1 - reassign creds to logged in user.
@@ -27,96 +26,7 @@ import UserStatus from "../components/_molecules/UserStatus/UserStatus";
 // 8 - Configure SSR rendering (no more login flicker)
 
 const Home: NextPage = () => {
-  const [inputValues, setInputValues] = useState({
-    email: "",
-    password: "",
-    code: "",
-  });
-
-  const { authenticate, logoutUser, getSession, currentUser } = useAuth();
-
-  useEffect(() => {
-    const getSess = async () => {
-      const session = await getSession();
-      const currentUser = await UserPool.getCurrentUser();
-
-      console.log({ currentUser });
-      console.log({ session });
-    };
-    getSess();
-  }, [getSession]);
-
-  const handleInput = (e: any) => {
-    const { name, value } = e.target;
-    setInputValues({ ...inputValues, [name]: value });
-  };
-
-  const handleLogin = (e: any) => {
-    e.preventDefault();
-    const { email, password } = inputValues;
-
-    try {
-      const response = authenticate(email, password);
-      console.log("auth response", response);
-    } catch (err) {
-      console.log("auth error", err);
-    }
-  };
-
-  const handleRegister = (e: any) => {
-    e.preventDefault();
-    const { email, password } = inputValues;
-
-    UserPool.signUp(email, password, [], [], (err, data) => {
-      if (err) return console.log(err);
-      console.log(data);
-    });
-  };
-
-  return (
-    <div>
-      <form>
-        <input
-          placeholder="email"
-          type="email"
-          name="email"
-          onChange={(e) => handleInput(e)}
-        ></input>
-        <input
-          placeholder="password"
-          type="password"
-          name="password"
-          onChange={(e) => handleInput(e)}
-        ></input>
-      </form>
-      <div>
-        {currentUser ? (
-          <button onClick={logoutUser}>Logout</button>
-        ) : (
-          <>
-            <button onClick={handleLogin}>Login</button>
-            <button onClick={handleRegister}>Register</button>
-          </>
-        )}
-      </div>
-      <input
-        placeholder="email"
-        type="email"
-        name="email"
-        onChange={(e) => handleInput(e)}
-      ></input>
-      <input
-        placeholder="code"
-        name="code"
-        onChange={(e) => handleInput(e)}
-      ></input>
-      <button onClick={() => confirmUser(inputValues.email, inputValues.code)}>
-        Confirm Account
-      </button>
-      <ContentUploader />
-      <ImageCollection />
-    </div>
-  );
+  return <main>index</main>;
 };
 
 export default Home;

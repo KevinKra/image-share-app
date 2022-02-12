@@ -6,7 +6,6 @@ import { s3Client, useAuth } from "../../../context/auth";
 
 function ContentUploader() {
   const [file, setFile] = useState<any>("");
-  const { currentUser } = useAuth();
 
   const selectFile = async (e: any) => {
     setFile(e.target.files[0]);
