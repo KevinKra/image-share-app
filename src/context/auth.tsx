@@ -5,10 +5,9 @@ import {
   CognitoUserPool,
   CognitoUserSession,
 } from "amazon-cognito-identity-js";
-// import { credentials, userLoggedIn } from "../utils/aws";
 import { fromCognitoIdentityPool } from "@aws-sdk/credential-providers";
 import * as AWS from "aws-sdk/global";
-import { S3, S3Client } from "@aws-sdk/client-s3";
+import { S3Client } from "@aws-sdk/client-s3";
 
 interface IAuthContext {
   authenticate: (email: string, password: string) => Promise<void>;
@@ -60,12 +59,47 @@ const getSession = async () => {
   }
 };
 
+const getGuestCredentials = () => {
+  return fromCognitoIdentityPool({
+    identityPoolId: process.env.NEXT_PUBLIC_IDENTITY_POOL_ID as string,
+    clientConfig: { region: process.env.NEXT_PUBLIC_AWS_REGION },
+  });
+};
+
+const getUserCredentials = (userSession: CognitoUserSession) => {
+  const userPoolId = process.env.NEXT_PUBLIC_USER_POOL_ID as string;
+  const poolRegion = process.env.NEXT_PUBLIC_AWS_REGION as string;
+  const loginDetails = `cognito-idp.${poolRegion}.amazonaws.com/${userPoolId}`;
+  const userIdToken = userSession.getIdToken().getJwtToken();
+
+  return fromCognitoIdentityPool({
+    identityPoolId: process.env.NEXT_PUBLIC_IDENTITY_POOL_ID as string,
+    clientConfig: { region: process.env.NEXT_PUBLIC_AWS_REGION },
+    logins: {
+      [loginDetails]: userIdToken,
+    },
+  });
+};
+
+const connectUserToS3 = (userSession?: CognitoUserSession) => {
+  const authCredentials = userSession && getUserCredentials(userSession);
+  const unAuthCredentials = getGuestCredentials();
+
+  userSession
+    ? console.log("authCredentials s3Client set")
+    : console.log("guest s3Client set");
+
+  return new S3Client({
+    region: process.env.NEXT_PUBLIC_AWS_REGION,
+    credentials: userSession ? authCredentials : unAuthCredentials,
+  });
+};
+
 // * context related code
 const AuthContext = createContext<IAuthContext | undefined>(undefined);
 
 const useAuth = () => {
   const context = useContext(AuthContext);
-
   if (context === undefined) {
     throw new Error("useAuth must be used within a AuthProvider");
   }
@@ -79,15 +113,20 @@ const AuthProvider = ({ children }: any) => {
 
   useEffect(() => {
     const checkForUserSession = async () => {
+      console.log("checkForUserSession");
       const currentUser = await UserPool.getCurrentUser();
-      return currentUser?.getSession((err: any, session: any) => {
-        if (err) {
-          console.log("error", err);
-          return err;
+      return currentUser?.getSession(
+        (err: any, session: CognitoUserSession) => {
+          if (err) {
+            console.log("checkForUserSession Err:", err);
+            return err;
+          }
+          s3Client = connectUserToS3(session);
+          setCurrentUser(session);
         }
-        setCurrentUser(session);
-      });
+      );
     };
+    s3Client = connectUserToS3();
     checkForUserSession();
   }, []);
 
@@ -104,38 +143,12 @@ const AuthProvider = ({ children }: any) => {
       });
 
       user.authenticateUser(authDetails, {
-        onSuccess: (data) => {
-          console.log("onSuccess", data);
-          AWS.config.region = poolRegion;
-          const loginDetails = `cognito-idp.${poolRegion}.amazonaws.com/${userPoolId}`;
+        onSuccess: (userSession) => {
+          console.log("onSuccess", userSession);
+          // AWS.config.region = poolRegion;
 
-          var accessToken = data.getAccessToken().getJwtToken();
-          var idToken = data.getIdToken().getJwtToken();
-          setCurrentUser(data);
-
-          console.log({ idToken });
-
-          // AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-          //   IdentityPoolId: process.env.NEXT_PUBLIC_IDENTITY_POOL_ID as string,
-          //   Logins: { [loginDetails]: accessToken },
-          // });
-
-          const credentials = fromCognitoIdentityPool({
-            // identityPoolId: process.env.NEXT_PUBLIC_IDENTITY_POOL_ID as string,
-            identityPoolId: process.env.NEXT_PUBLIC_IDENTITY_POOL_ID as string,
-            clientConfig: { region: process.env.NEXT_PUBLIC_AWS_REGION },
-            logins: {
-              // [userPoolId]: accessToken,
-              [loginDetails]: idToken,
-            },
-          });
-
-          console.log({ credentials });
-
-          s3Client = new S3Client({
-            region: process.env.NEXT_PUBLIC_AWS_REGION,
-            credentials,
-          });
+          setCurrentUser(userSession);
+          s3Client = connectUserToS3(userSession);
 
           console.log("AWS.config", AWS.config);
         },

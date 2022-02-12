@@ -2,10 +2,11 @@ import { useState } from "react";
 import Image from "next/image";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { albumBucket } from "../../../utils/aws";
-import { s3Client } from "../../../context/auth";
+import { s3Client, useAuth } from "../../../context/auth";
 
 function ContentUploader() {
   const [file, setFile] = useState<any>("");
+  const { currentUser } = useAuth();
 
   const selectFile = async (e: any) => {
     setFile(e.target.files[0]);
@@ -15,6 +16,7 @@ function ContentUploader() {
     const params = { Bucket: albumBucket, Key: file.name, Body: file };
     const command = new PutObjectCommand(params);
     try {
+      console.log({ s3Client });
       const response = await s3Client.send(command);
       console.log("upload success", response);
     } catch (error) {
@@ -34,9 +36,6 @@ function ContentUploader() {
   );
 }
 
-/**
- * Component to display thumbnail of image.
- */
 interface IImageThumbnail {
   image: File;
 }
