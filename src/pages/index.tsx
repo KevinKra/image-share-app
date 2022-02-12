@@ -6,6 +6,8 @@ import ImageCollection from "../components/_molecules/ImageCollection/ImageColle
 import { CognitoUserPool } from "amazon-cognito-identity-js";
 import UserStatus from "../components/_molecules/UserStatus/UserStatus";
 import NavBar from "../components/_molecules/NavBar/NavBar";
+import Profile from "../components/_molecules/Profile/Profile";
+import styled from "@emotion/styled";
 
 // * cognito identity pool is configured
 // * guest (unauth) users are able to upload images
@@ -26,7 +28,19 @@ import NavBar from "../components/_molecules/NavBar/NavBar";
 // 8 - Configure SSR rendering (no more login flicker)
 
 const Home: NextPage = () => {
-  return <main>index</main>;
+  return (
+    <PageWrapper>
+      <Profile />
+    </PageWrapper>
+  );
 };
 
 export default Home;
+
+const PageWrapper = styled("div")`
+  border: 1px solid red;
+  height: 100vh;
+  width: 80vw;
+  max-width: 925px;
+  margin: 0 auto;
+`;

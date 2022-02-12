@@ -10,7 +10,6 @@ const NavBar = () => {
     <Wrapper>
       <Typography>{currentUser ? "user" : "Guest"}</Typography>
       {currentUser && <Button onClick={logoutUser}>Logout</Button>}
-      <Typography>NavBar</Typography>
     </Wrapper>
   );
 };
