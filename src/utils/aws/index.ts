@@ -1,10 +1,4 @@
-import { fromCognitoIdentityPool } from "@aws-sdk/credential-providers";
-import {
-  S3,
-  ListObjectsCommand,
-  PutObjectCommand,
-  S3Client,
-} from "@aws-sdk/client-s3";
+import { ListObjectsCommand } from "@aws-sdk/client-s3";
 import { s3Client } from "../../context/auth";
 
 // * S3 guest instantiation

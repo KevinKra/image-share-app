@@ -18,10 +18,10 @@ interface IAuthContext {
 
 export let s3Client: S3Client;
 
-const identityPoolId = process.env.NEXT_PUBLIC_IDENTITY_POOL_ID as string;
+// const identityPoolId = process.env.NEXT_PUBLIC_IDENTITY_POOL_ID as string;
 const userPoolId = process.env.NEXT_PUBLIC_USER_POOL_ID as string;
 const userPoolClientId = process.env.NEXT_PUBLIC_CLIENT_ID as string;
-const poolRegion = process.env.NEXT_PUBLIC_AWS_REGION as string;
+// const poolRegion = process.env.NEXT_PUBLIC_AWS_REGION as string;
 
 export const poolData = {
   UserPoolId: userPoolId,

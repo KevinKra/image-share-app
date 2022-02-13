@@ -2,7 +2,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { albumBucket } from "../../../utils/aws";
-import { s3Client, useAuth } from "../../../context/auth";
+import { s3Client } from "../../../context/auth";
 
 function ContentUploader() {
   const [file, setFile] = useState<any>("");

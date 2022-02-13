@@ -1,11 +1,4 @@
 import type { NextPage } from "next";
-import { useState, useContext, useEffect } from "react";
-import { useAuth, AuthProvider, UserPool, confirmUser } from "../context/auth";
-import ContentUploader from "../components/_molecules/ContentUploader/ContentUploader";
-import ImageCollection from "../components/_molecules/ImageCollection/ImageCollection";
-import { CognitoUserPool } from "amazon-cognito-identity-js";
-import UserStatus from "../components/_molecules/UserStatus/UserStatus";
-import NavBar from "../components/_molecules/NavBar/NavBar";
 import Profile from "../components/_molecules/Profile/Profile";
 import styled from "@emotion/styled";
 import PicturesCollection from "../components/_molecules/PicturesCollection/PicturesCollection";
