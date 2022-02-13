@@ -10,23 +10,12 @@ import Profile from "../components/_molecules/Profile/Profile";
 import styled from "@emotion/styled";
 import PicturesCollection from "../components/_molecules/PicturesCollection/PicturesCollection";
 
-// * cognito identity pool is configured
-// * guest (unauth) users are able to upload images
-// * can get images (flat-level) from s3
-
-// todo - bucket is currently fully public, look into signedURLs ? (403 forbidden error)
-// todo - set up logic to set images/objects to folder, make readable
-// todo - signed in users / auth iam configure
-
-// 1 - remove s3 put permission from guest users
-// 1.1 - reassign creds to logged in user.
-// 2 - test if guest user can no longer upload
-// 3 - test if signed in user can upload (config iam permissions if needed)
-// 4 - test that after signed in user logs off, they cannot still upload
-// 5 - setup buckets to have user uuid folders
-// 6 - GET/READ/DELETE objects to new uuid-based folders
-// 7 - Experiment with cognito-apiGateway auth routes
-// 8 - Configure SSR rendering (no more login flicker)
+// - users can get image from user-unique s3 subfolder
+// - users can post image to user-unique s3 subfolder
+// - users can delete image in user-unique s3 subfolder
+// - on image upload, write lambda to create smaller versions and save in subfolder
+// - setup bucket to be private, confirm can still access
+// - rebuild identity-pool/user-pool with name, nickname, email -- no user key
 
 const Home: NextPage = () => {
   return (
